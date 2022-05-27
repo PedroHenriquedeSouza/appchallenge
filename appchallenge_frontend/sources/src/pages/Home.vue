@@ -9,6 +9,12 @@
       </div>
     </v-banner>
 
+    <div class="text-center">
+        <div class="my-4">
+          <v-btn @click="getPlansStateUrl">Planos</v-btn>
+          </div>
+    </div>
+
     <div class="ma-12 elevation-24">
       <v-expansion-panels>
         <v-expansion-panel
@@ -28,25 +34,16 @@
                     ></v-progress-linear>
                   </template>
 
-                  <v-card-title
+                  <v-card-title class="yellow"
                     >Plano: {{ plan.download_speed }} MBs</v-card-title
                   >
 
                   <v-card-text>
                     <v-row align="center" class="mx-0">
-                      <v-rating
-                        :value="4.5"
-                        color="amber"
-                        dense
-                        half-increments
-                        readonly
-                        size="14"
-                      ></v-rating>
-
-                      <div class="grey--text ms-4">4.5 (413)</div>
+                      <div class="text-subtitle-1 ms-4">Internet via: {{ plan.type_of_internet }}</div>
                     </v-row>
 
-                    <div class="my-4 text-subtitle-1">$ • Italian, Cafe</div>
+                    <div class="my-4 text-h3">R$ {{ plan.price_per_month }} /mês</div>
 
                     <div>
                       Small plates, salads & sandwiches - an intimate setting
@@ -101,8 +98,45 @@ export default {
     };
   },
 
+  methods: {
+    getPlansUrl() {
+      axios
+        .get("https://app-challenge-api.herokuapp.com/plans")
+        .then((response) => {
+          if (response.data != null)
+            this.apiInformation = response.data.reduce((group, row) => {
+              const { isp } = row;
+              group[isp] = group[isp] ?? [];
+              group[isp].push(row);
+              return group;
+            }, {});
+          console.log(this.apiInformation);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    getPlansStateUrl() {
+      axios
+        .get("https://app-challenge-api.herokuapp.com/plans?state=")
+        .then((response) => {
+          if (response.data != null)
+            this.apiInformation = response.data.reduce((group, row) => {
+              const { isp } = row;
+              group[isp] = group[isp] ?? [];
+              group[isp].push(row);
+              return group;
+            }, {});
+          console.log(this.apiInformation);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+  },
+
   mounted() {
-    axios
+    /*axios
       .get("https://app-challenge-api.herokuapp.com/plans")
       .then((response) => {
         if (response.data != null)
@@ -123,7 +157,7 @@ export default {
       })
       .catch((error) => {
         console.log(error);
-      });
+      });*/
   },
 
   computed: {
