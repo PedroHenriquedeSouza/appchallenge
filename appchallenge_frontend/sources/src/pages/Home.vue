@@ -13,7 +13,7 @@
       <v-row align="center">
         <v-col cols="3" class="ma-6">
           <v-select
-            v-model="pedro"
+            v-model="ufSelect"
             :items="items"
             item-text="uf"
             item-value="uf"
@@ -171,7 +171,7 @@ export default {
         this.apiInformation.data.includes(plan.id)
       );
     },
-    pedro: {
+    ufSelect: {
       get() {
         console.log(this.value);
         return this.value;
