@@ -9,10 +9,21 @@
       </div>
     </v-banner>
 
-    <div class="text-center">
-        <div class="my-4">
-          <v-btn @click="getPlansStateUrl">Planos</v-btn>
-          </div>
+    <div class="text-center ma-12">
+      <v-row align="center">
+        <v-col cols="3" class="ma-6">
+          <v-select
+            v-model="pedro"
+            :items="items"
+            item-text="uf"
+            item-value="uf"
+            label="UF"
+            return-object
+            single-line
+          ></v-select>
+        </v-col>
+        <v-btn color="success" rounded @click="getPlans">Planos</v-btn>
+      </v-row>
     </div>
 
     <div class="ma-12 elevation-24">
@@ -26,54 +37,29 @@
             <v-layout wrap>
               <v-flex xs12 sm6 md4 lg3 v-for="plan in item" :key="plan">
                 <v-card class="ma-2 elevation-24">
-                  <template slot="progress">
-                    <v-progress-linear
-                      color="deep-purple"
-                      height="10"
-                      indeterminate
-                    ></v-progress-linear>
-                  </template>
-
-                  <v-card-title class="yellow"
-                    >Plano: {{ plan.download_speed }} MBs</v-card-title
-                  >
+                  <v-card-title class="text-h4 yellow"
+                    >Plano: {{ plan.download_speed }} MBs
+                  </v-card-title>
+                    <div class="text-subtitle-1 ms-4">
+                      Internet via: {{ plan.type_of_internet }}
+                    </div>
 
                   <v-card-text>
-                    <v-row align="center" class="mx-0">
-                      <div class="text-subtitle-1 ms-4">Internet via: {{ plan.type_of_internet }}</div>
-                    </v-row>
 
-                    <div class="my-4 text-h3">R$ {{ plan.price_per_month }} /mês</div>
-
-                    <div>
-                      Small plates, salads & sandwiches - an intimate setting
-                      with 12 indoor seats plus patio seating.
+                    <div class="my-4 text-h3 green--text">
+                      R$ {{ plan.price_per_month }} /mês
                     </div>
+
+                    <div>Velocidade de Download: {{ plan.download_speed }} MBs</div>
+
+                    <div>Velocidade de Upload: {{ plan.upload_speed }} MBs</div>
                   </v-card-text>
 
                   <v-divider class="mx-4"></v-divider>
 
-                  <v-card-title>Tonight's availability</v-card-title>
-
-                  <v-card-text>
-                    <v-chip-group
-                      v-model="selection"
-                      active-class="deep-purple accent-4 white--text"
-                      column
-                    >
-                      <v-chip>5:30PM</v-chip>
-
-                      <v-chip>7:30PM</v-chip>
-
-                      <v-chip>8:00PM</v-chip>
-
-                      <v-chip>9:00PM</v-chip>
-                    </v-chip-group>
-                  </v-card-text>
-
                   <v-card-actions>
-                    <v-btn color="deep-purple lighten-2" text @click="reserve">
-                      Reserve
+                    <v-btn color="purple darken-2" class="white--text" @click="reserve">
+                      Quero Contratar
                     </v-btn>
                   </v-card-actions>
                 </v-card>
@@ -95,11 +81,53 @@ export default {
   data() {
     return {
       apiInformation: [],
+      select: {},
+      state: "",
+      items: [
+        { uf: "Todos" },
+        { uf: "RO" },
+        { uf: "AC" },
+        { uf: "AM" },
+        { uf: "RR" },
+        { uf: "PA" },
+        { uf: "AP" },
+        { uf: "TO" },
+        { uf: "MA" },
+        { uf: "PI" },
+        { uf: "CE" },
+        { uf: "RN" },
+        { uf: "PB" },
+        { uf: "PE" },
+        { uf: "AL" },
+        { uf: "SE" },
+        { uf: "BA" },
+        { uf: "MG" },
+        { uf: "ES" },
+        { uf: "RJ" },
+        { uf: "SP" },
+        { uf: "PR" },
+        { uf: "SC" },
+        { uf: "RS" },
+        { uf: "MS" },
+        { uf: "MT" },
+        { uf: "GO" },
+        { uf: "DF" },
+      ],
     };
   },
 
   methods: {
+    getPlans() {
+      console.log("state" + this.state.uf);
+      if (this.state.uf == undefined || this.state.uf == "Todos") {
+        this.getPlansUrl();
+      } else {
+        this.getPlansStateUrl();
+      }
+    },
+
     getPlansUrl() {
+      console.log("state" + this.state.uf);
       axios
         .get("https://app-challenge-api.herokuapp.com/plans")
         .then((response) => {
@@ -118,7 +146,9 @@ export default {
     },
     getPlansStateUrl() {
       axios
-        .get("https://app-challenge-api.herokuapp.com/plans?state=")
+        .get(
+          "https://app-challenge-api.herokuapp.com/plans?state=" + this.state.uf
+        )
         .then((response) => {
           if (response.data != null)
             this.apiInformation = response.data.reduce((group, row) => {
@@ -135,36 +165,21 @@ export default {
     },
   },
 
-  mounted() {
-    /*axios
-      .get("https://app-challenge-api.herokuapp.com/plans")
-      .then((response) => {
-        if (response.data != null)
-          this.apiInformation = response.data.reduce((group, row) => {
-            const { isp } = row;
-            group[isp] = group[isp] ?? [];
-            group[isp].push(row);
-            return group;
-          }, {});
-
-        // response.data.forEach((row) => {
-        //   if (!this.apiInformation[row.isp])
-        //     this.apiInformation[row.isp] = []
-        //     this.apiInformation[row.isp].push(row)
-        //})
-        console.log(this.apiInformation);
-        //this.apiInformation = response.data
-      })
-      .catch((error) => {
-        console.log(error);
-      });*/
-  },
-
   computed: {
     planSelected() {
       return this.apiInformation.filter((plan) =>
         this.apiInformation.data.includes(plan.id)
       );
+    },
+    pedro: {
+      get() {
+        console.log(this.value);
+        return this.value;
+      },
+      set(item) {
+        console.log(item);
+        this.state = item;
+      },
     },
   },
 };
